@@ -63,21 +63,24 @@ app.get("/users/:id", (req, res) => {
   }
 });
 
+// POST a new user
 app.post("/users", (req, res) => {
   const newUser = req.body;
-  newUser.id = generateId();       // assign random ID
-  users.users_list.push(newUser);
-  res.status(201).send(newUser);   // return the added user with status 201 Created
+  newUser.id = generateId();         // Assign a new ID
+  users.users_list.push(newUser);    // Add to the list
+  res.status(201).send(newUser);     // Return the updated object with 201 status
 });
 
 // DELETE a user by ID
 app.delete("/users/:id", (req, res) => {
-  const index = users.users_list.findIndex(u => u.id === req.params.id);
+  const id = req.params.id;
+  const index = users.users_list.findIndex(u => u.id === id);
+
   if (index === -1) {
     res.status(404).send("User not found.");
   } else {
-    const deletedUser = users.users_list.splice(index, 1)[0];
-    res.send({ message: `User deleted.`, user: deletedUser });
+    users.users_list.splice(index, 1);
+    res.status(204).send(); // No content returned
   }
 });
 
