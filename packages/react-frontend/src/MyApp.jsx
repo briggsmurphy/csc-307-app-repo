@@ -7,24 +7,36 @@ function MyApp() {
    const [characters, setCharacters] = useState([]);
 
    function removeOneCharacter(index) {
-     const updated = characters.filter((character, i) => {
-       return i !== index;
-     });
-     setCharacters(updated);
-   }
+     const userId = characters[index].id;
 
-   function updateList(person) { 
-     postUser(person)
-       .then((res) => {
-         if (res.status === 201) {             // Only update state if 201
-           setCharacters([...characters, person]);
-         } else {
-           console.error("User not created. Status:", res.status);
+     fetch(`http://localhost:8000/users/${userId}`, {
+       method: "DELETE",
+     })
+       .then((response) => {
+         if (response.status === 204) {
+           // Only update the frontend if deletion succeeded
+           const updated = characters.filter((_, i) => i !== index);
+           setCharacters(updated);
+         } else if (response.status === 404) {
+           console.log("User not found on backend");
          }
        })
        .catch((error) => {
          console.log(error);
        });
+   }
+
+
+   function updateList(person) {
+     postUser(person)
+       .then((res) => {
+         if (res.status === 201) return res.json(); // parse the response
+         else throw new Error("Failed to add user");
+       })
+       .then((newUserWithId) => {
+         setCharacters([...characters, newUserWithId]); // use the object with ID
+       })
+       .catch((error) => console.log(error));
    }
 
    
