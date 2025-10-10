@@ -25,6 +25,11 @@ const findUserById = (id) => users.users_list.find(u => u.id === id);
 const findUserByName = (name) =>
   users.users_list.filter(u => u.name.toLowerCase() === name.toLowerCase());
 
+// Function to generate a random ID
+function generateId() {
+  return Math.random().toString(36).substr(2, 6); // generates a 6-character string
+}
+
 // GET all users or filter by name via query ?name=
 app.get("/users", (req, res) => {
   const name = req.query.name;
@@ -58,11 +63,11 @@ app.get("/users/:id", (req, res) => {
   }
 });
 
-// POST a new user
 app.post("/users", (req, res) => {
   const newUser = req.body;
+  newUser.id = generateId();       // assign random ID
   users.users_list.push(newUser);
-  res.status(201).send(newUser); // return the added user with status 201 Created
+  res.status(201).send(newUser);   // return the added user with status 201 Created
 });
 
 // DELETE a user by ID
