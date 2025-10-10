@@ -14,12 +14,19 @@ function MyApp() {
    }
 
    function updateList(person) { 
-       postUser(person)
-         .then(() => setCharacters([...characters, person]))
-         .catch((error) => {
-           console.log(error);
-         })
+     postUser(person)
+       .then((res) => {
+         if (res.status === 201) {             // Only update state if 201
+           setCharacters([...characters, person]);
+         } else {
+           console.error("User not created. Status:", res.status);
+         }
+       })
+       .catch((error) => {
+         console.log(error);
+       });
    }
+
    
    function fetchUsers() {
      const promise = fetch("http://localhost:8000/users");
